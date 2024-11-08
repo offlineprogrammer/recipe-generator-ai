@@ -15,18 +15,17 @@ import React, { FormEvent } from "react";
 const { useAIGeneration } = createAIHooks(amplifyClient);
 
 export default function Page() {
-  const [{ data, isLoading}, generateRecipe] =
+  const [{ data, isLoading, hasError }, generateRecipe] =
     useAIGeneration("generateRecipe");
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     try {
       const formData = new FormData(event.currentTarget);
-
       generateRecipe({
         description: formData.get("description")?.toString() || "",
       });
+      console.log(hasError);
     } catch (e) {
       alert(`An error occurred: ${e}`);
     } finally {
@@ -65,6 +64,7 @@ export default function Page() {
             <Placeholder size="large" />
           </div>
         ) : (
+          !hasError &&
           data?.name && (
             <p className="result">
               <Heading level={3}>{data?.name}</Heading>
@@ -84,6 +84,8 @@ export default function Page() {
               <Text>{data?.instructions}</Text>
             </p>
           )
+   
+
         )}
       </div>
     </div>
